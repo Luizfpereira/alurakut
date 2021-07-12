@@ -16,7 +16,7 @@ export default function Home() {
   const usuarioAleatorio = 'Luizfpereira';
   const pessoasFavoritas = [
     'torvalds',
-    'omariosouto',
+    'Pim3nta',
     'peas',
     'rafaballerini',
     'laurati',
