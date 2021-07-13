@@ -10,6 +10,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     font-family: sans-serif;
     background-color: #D9E6F6;
+    background-image: url("https://wallpaperaccess.com/full/683979.jpg");
   }
   #__next {
     display: flex;
