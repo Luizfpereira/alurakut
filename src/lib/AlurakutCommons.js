@@ -189,7 +189,7 @@ export function AlurakutProfileSidebarMenuDefault() {
     <AlurakutProfileSidebarMenuDefault.Wrapper>
       <nav>
         <a href="/">
-          <img src={`${BASE_URL}/icons/user.svg`} />
+          <img src={`https://github.com/Luizfpereira.png`} />
             Perfil
           </a>
         <a href="/">
