@@ -34,19 +34,19 @@ function ProfileRelationsBox(propriedades) {
   return (
     <ProfileRelationsBoxWrapper>
       <h2 className="smallTitle">{propriedades.title} ({propriedades.items.length})</h2>
-
-      <ul>
-        {/* {seguidores.slice(0, 6).map((itemAtual) => {
-          return (
-            <li key={itemAtual}>
-              <a href={`/users/${itemAtual}`}>
-                <img src={`https://github.com/${itemAtual}.png`} />
-                <span>{itemAtual}</span>
-              </a>
-            </li>
-          );
-        })} */}
-      </ul>
+            <ul>
+              {propriedades.items.slice(0,6).map((item) => { 
+                return(
+                <li key={item.login}>
+                  <a href={item.html_url}>
+                    <img src={item.avatar_url} />
+                    <span>{item.login}</span>
+                  </a>
+                </li>
+                )
+              })}
+            </ul>
+ 
     </ProfileRelationsBoxWrapper>
   );
 }
@@ -86,7 +86,7 @@ export default function Home() {
   const [seguidores, setSeguidores] = React.useState([]);
 
   React.useEffect(function(){
-    fetch("https://api.github.com/users/peas/followers")
+    fetch("https://api.github.com/users/Luizfpereira/followers")
     .then((respostaDoServidor) => respostaDoServidor.json())
     .then(function(respostaCompleta) {
       setSeguidores(respostaCompleta);
