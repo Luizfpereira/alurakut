@@ -30,23 +30,47 @@ function ProfileSidebar(propriedades) {
   );
 }
 
+function ProfileRelationsBox(propriedades) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">{propriedades.title} ({propriedades.items.length})</h2>
+
+      <ul>
+        {/* {seguidores.slice(0, 6).map((itemAtual) => {
+          return (
+            <li key={itemAtual}>
+              <a href={`/users/${itemAtual}`}>
+                <img src={`https://github.com/${itemAtual}.png`} />
+                <span>{itemAtual}</span>
+              </a>
+            </li>
+          );
+        })} */}
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  );
+}
+
 export default function Home() {
   const usuarioAleatorio = "Luizfpereira";
   const [comunidades, setComunidades] = React.useState([
     {
       id: "12802378123789378912789789123896124",
       title: "The Last of Us",
-      image: "https://image.api.playstation.com/vulcan/img/rnd/202010/2618/w48z6bzefZPrRcJHc7L8SO66.png",
+      image:
+        "https://image.api.playstation.com/vulcan/img/rnd/202010/2618/w48z6bzefZPrRcJHc7L8SO66.png",
     },
     {
       id: "12802378123789378912789789123896123",
       title: "God of War",
-      image: "https://image.api.playstation.com/vulcan/img/rnd/202011/1021/X3WIAh63yKhRRiMohLoJMeQu.png",
+      image:
+        "https://image.api.playstation.com/vulcan/img/rnd/202011/1021/X3WIAh63yKhRRiMohLoJMeQu.png",
     },
     {
       id: "12802378123789378912789789123896125",
       title: "God of War",
-      image: "https://image.api.playstation.com/vulcan/ap/rnd/202010/0221/vC7trMorHJgbImp8PCQvpI0p.png",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202010/0221/vC7trMorHJgbImp8PCQvpI0p.png",
     },
   ]);
   const pessoasFavoritas = [
@@ -56,12 +80,22 @@ export default function Home() {
     "rafaballerini",
     "laurati",
     "jpbadan",
-    "omariosouto"
+    "omariosouto",
   ];
+
+  const [seguidores, setSeguidores] = React.useState([]);
+
+  React.useEffect(function(){
+    fetch("https://api.github.com/users/peas/followers")
+    .then((respostaDoServidor) => respostaDoServidor.json())
+    .then(function(respostaCompleta) {
+      setSeguidores(respostaCompleta);
+    })
+  }, [])
 
   return (
     <>
-      <AlurakutMenu githubUser={usuarioAleatorio}/>
+      <AlurakutMenu githubUser={usuarioAleatorio} />
       <MainGrid>
         {/* <Box style="grid-area: profileArea;"> */}
         <div className="profileArea" style={{ gridArea: "profileArea" }}>
@@ -118,7 +152,7 @@ export default function Home() {
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">Comunidades ({comunidades.length})</h2>
             <ul>
-              {comunidades.slice(0,6).map((itemAtual) => {
+              {comunidades.slice(0, 6).map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
                     <a href={`/users/${itemAtual.title}`}>
@@ -136,7 +170,7 @@ export default function Home() {
             </h2>
 
             <ul>
-              {pessoasFavoritas.slice(0,6).map((itemAtual) => {
+              {pessoasFavoritas.slice(0, 6).map((itemAtual) => {
                 return (
                   <li key={itemAtual}>
                     <a href={`/users/${itemAtual}`}>
@@ -148,6 +182,7 @@ export default function Home() {
               })}
             </ul>
           </ProfileRelationsBoxWrapper>
+          <ProfileRelationsBox title="Seguidores" items={seguidores} />
         </div>
       </MainGrid>
     </>
