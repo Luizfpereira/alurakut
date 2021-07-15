@@ -33,46 +33,28 @@ function ProfileSidebar(propriedades) {
 function ProfileRelationsBox(propriedades) {
   return (
     <ProfileRelationsBoxWrapper>
-      <h2 className="smallTitle">{propriedades.title} ({propriedades.items.length})</h2>
-            <ul>
-              {propriedades.items.slice(0,6).map((item) => { 
-                return(
-                <li key={item.login}>
-                  <a href={item.html_url}>
-                    <img src={item.avatar_url} />
-                    <span>{item.login}</span>
-                  </a>
-                </li>
-                )
-              })}
-            </ul>
- 
+      <h2 className="smallTitle">
+        {propriedades.title} ({propriedades.items.length})
+      </h2>
+      <ul>
+        {propriedades.items.slice(0, 6).map((item) => {
+          return (
+            <li key={item.login}>
+              <a href={item.html_url}>
+                <img src={item.avatar_url} />
+                <span>{item.login}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </ProfileRelationsBoxWrapper>
   );
 }
 
 export default function Home() {
   const usuarioAleatorio = "Luizfpereira";
-  const [comunidades, setComunidades] = React.useState([
-    {
-      id: "12802378123789378912789789123896124",
-      title: "The Last of Us",
-      image:
-        "https://image.api.playstation.com/vulcan/img/rnd/202010/2618/w48z6bzefZPrRcJHc7L8SO66.png",
-    },
-    {
-      id: "12802378123789378912789789123896123",
-      title: "God of War",
-      image:
-        "https://image.api.playstation.com/vulcan/img/rnd/202011/1021/X3WIAh63yKhRRiMohLoJMeQu.png",
-    },
-    {
-      id: "12802378123789378912789789123896125",
-      title: "God of War",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202010/0221/vC7trMorHJgbImp8PCQvpI0p.png",
-    },
-  ]);
+  const [comunidades, setComunidades] = React.useState([]);
   const pessoasFavoritas = [
     "torvalds",
     "Pim3nta",
@@ -85,13 +67,40 @@ export default function Home() {
 
   const [seguidores, setSeguidores] = React.useState([]);
 
-  React.useEffect(function(){
+  React.useEffect(function () {
     fetch("https://api.github.com/users/Luizfpereira/followers")
-    .then((respostaDoServidor) => respostaDoServidor.json())
-    .then(function(respostaCompleta) {
-      setSeguidores(respostaCompleta);
+      .then((respostaDoServidor) => respostaDoServidor.json())
+      .then((respostaCompleta) => {
+        setSeguidores(respostaCompleta);
+      });
+
+    // API GraphQL
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Authorization': '09634ecb64d6577f3c92634ceffa83',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ "query": `query {
+        allCommunities {
+          id 
+          title
+          imageUrl
+          creatorSlug
+        }
+      }` })
     })
-  }, [])
+    .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
+    .then((respostaCompleta) => {
+      const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+      console.log(comunidadesVindasDoDato)
+      setComunidades(comunidadesVindasDoDato)
+    })
+    // .then(function (response) {
+    //   return response.json()
+    // })
+  }, []);
 
   return (
     <>
@@ -117,12 +126,25 @@ export default function Home() {
                 console.log("Campo: ", dadosDoForm.get("image"));
 
                 const comunidade = {
-                  id: new Date().toISOString(),
                   title: dadosDoForm.get("title"),
-                  image: dadosDoForm.get("image"),
+                  imageUrl: dadosDoForm.get("image"),
+                  creatorSlug: usuarioAleatorio,
                 };
-                const comunidadesAtualizadas = [...comunidades, comunidade];
-                setComunidades(comunidadesAtualizadas);
+
+                fetch('/api/comunidades', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(comunidade)
+                })
+                .then(async (response) => {
+                  const dados = await response.json();
+                  console.log(dados.registroCriado);
+                  const comunidade = dados.registroCriado;
+                  const comunidadesAtualizadas = [...comunidades, comunidade];
+                  setComunidades(comunidadesAtualizadas)
+                })
               }}
             >
               <div>
@@ -144,6 +166,47 @@ export default function Home() {
               <button>Criar comunidade</button>
             </form>
           </Box>
+          <Box>
+            <h2 className="subTitle">Deixe aqui seu depoimento &#128512;</h2>
+            <form
+              onSubmit={function handleDepoimento(e){
+                e.preventDefault();
+                const dadosDoDepoimento = new FormData(e.target);
+                const depoimento = {
+                  text: dadosDoDepoimento.get("text"),
+                  creatorSlug: usuarioAleatorio,
+                };
+
+                fetch('/api/depoimentos', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(depoimento)
+                })
+                .then(async (response) => {
+                  const dados = await response.json();
+                  console.log(dados.registroCriado);
+                  const depoimento = dados.registroCriado;
+                  const depoimentosAtualizados = [...depoimentos, depoimento];
+                  setDepoimentos(depoimentosAtualizados);
+                })
+              }}
+            >
+              <div>
+                <input
+                    placeholder="Escreva seu depoimento"
+                    name="depoimento"
+                    aria-label="Escreva seu depoimento"
+                    type="text"
+                  />
+              </div>
+              <button>Enviar</button>
+            </form>
+          </Box>
+          <Box>
+            <h2 className="subTitle">Depoimentos</h2>
+          </Box>
         </div>
         <div
           className="profileRelationsArea"
@@ -155,8 +218,8 @@ export default function Home() {
               {comunidades.slice(0, 6).map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
-                    <a href={`/users/${itemAtual.title}`}>
-                      <img src={itemAtual.image} />
+                    <a href={`/communities/${itemAtual.id}`}>
+                      <img src={itemAtual.imageUrl} />
                       <span>{itemAtual.title}</span>
                     </a>
                   </li>
