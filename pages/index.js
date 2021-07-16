@@ -1,6 +1,8 @@
 import React from "react";
 import MainGrid from "../src/components/MainGrid";
 import Box from "../src/components/Box";
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 import {
   AlurakutMenu,
   OrkutNostalgicIconSet,
@@ -52,8 +54,8 @@ function ProfileRelationsBox(propriedades) {
   );
 }
 
-export default function Home() {
-  const usuarioAleatorio = "Luizfpereira";
+export default function Home(props) {
+  const usuarioAleatorio = props.githubUser;
   const [comunidades, setComunidades] = React.useState([]);
   const pessoasFavoritas = [
     "torvalds",
@@ -68,8 +70,23 @@ export default function Home() {
   const [seguidores, setSeguidores] = React.useState([]);
 
   React.useEffect(function () {
-    fetch("https://api.github.com/users/Luizfpereira/followers")
-      .then((respostaDoServidor) => respostaDoServidor.json())
+    // fetch('/api/usuario', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(comunidade)
+    // })
+    // .then(async (response) => {
+    //   const dados = await response.json();
+    //   console.log(dados.registroCriado);
+    //   const comunidade = dados.registroCriado;
+    //   const comunidadesAtualizadas = [...comunidades, comunidade];
+    //   setComunidades(comunidadesAtualizadas)
+    // })
+
+    fetch(`https://api.github.com/users/${usuarioAleatorio}/followers`)
+      .then(async(respostaDoServidor) => await respostaDoServidor.json())
       .then((respostaCompleta) => {
         setSeguidores(respostaCompleta);
       });
@@ -251,3 +268,33 @@ export default function Home() {
     </>
   );
 }
+
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+  const { isAuthenticated } =  await fetch('https://alurakut.vercel.app/api/auth', {
+    headers: {
+        Authorization: token
+      }
+  })
+  .then(async (resposta) => await resposta.json())
+
+  // if(!isAuthenticated) {
+  //   return {
+  //     redirect: {
+  //       destination: '/login',
+  //       permanent: false,
+  //     }
+  //   }
+  // }
+  const token_wait = jwt.decode(token);
+  const githubUser = token_wait.githubUser;
+ 
+  return {
+    props: {
+      githubUser: githubUser
+    }, // will be passed to the page component as props
+  }
+} 
+
+
