@@ -1,13 +1,17 @@
 import React from 'react';
 // Hook do NextJS
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import nookies from 'nookies';
+
 
 export default function LoginScreen() {
   const router = useRouter();
+  //const { url, path } = useRouteMatch();
   const [githubUser, setGithubUser] = React.useState('');
 
   return (
+    <>
     <main style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <div className="loginScreen">
         <section className="logoArea">
@@ -23,25 +27,28 @@ export default function LoginScreen() {
                 infosDoEvento.preventDefault();
                 // alert('Alguém clicou no botão!')
                 
-                fetch('https://alurakut.vercel.app/api/login', {
-                    method: 'POST',
-                    headers: {
-                       'Content-Type': 'application/json'  
-                    },
-                    body: JSON.stringify({ githubUser: githubUser })
-                })
-                .then(async (respostaDoServer) => {
-                    const dadosDaResposta = await respostaDoServer.json()
-                    const token = dadosDaResposta.token;
-                    nookies.set(null, 'USER_TOKEN', token, {
-                        path: '/',
-                        maxAge: 86400 * 7 
-                    })
+                // fetch('https://alurakut.vercel.app/api/login', {
+                //     method: 'POST',
+                //     headers: {
+                //        'Content-Type': 'application/json'  
+                //     },
+                //     body: JSON.stringify({ githubUser: githubUser })
+                // })
+                // .then(async (respostaDoServer) => {
+                //     const dadosDaResposta = await respostaDoServer.json()
+                //     const token = dadosDaResposta.token;
+                //     nookies.set(null, 'USER_TOKEN', token, {
+                //         path: '/',
+                //         maxAge: 86400 * 7 
+                //     })
                     
-                })
+                // })
 
                 console.log('Usuário: ', githubUser)
-                router.push('/')
+                router.push({
+                  pathname: '/',
+                  query: { githubUser: githubUser }
+              })
           }}>
             <p>
               Acesse agora mesmo com seu usuário do <strong>GitHub</strong>!
@@ -58,11 +65,8 @@ export default function LoginScreen() {
                 ? 'Preencha o campo'
                 : ''
             }
-            <button type="submit">
-              Login
-            </button>
+            <button type="submit">Login</button>
           </form>
-
           <footer className="box">
             <p>
               Ainda não é membro? <br />
@@ -82,5 +86,6 @@ export default function LoginScreen() {
         </footer>
       </div>
     </main>
+    </>
   )
 }  

@@ -1,4 +1,6 @@
 import React from "react";
+import { withRouter } from 'next/router'
+import { useRouter } from 'next/router';
 import MainGrid from "../src/components/MainGrid";
 import Box from "../src/components/Box";
 import nookies from 'nookies';
@@ -55,7 +57,8 @@ function ProfileRelationsBox(propriedades) {
 }
 
 export default function Home(props) {
-  const usuarioAleatorio = props.githubUser;
+  const router = useRouter();
+  const usuarioAleatorio = router.query.githubUser;
   const [comunidades, setComunidades] = React.useState([]);
   const pessoasFavoritas = [
     "torvalds",
@@ -117,10 +120,11 @@ export default function Home(props) {
     // .then(function (response) {
     //   return response.json()
     // })
-  }, []);
+  }, [usuarioAleatorio]);
 
   return (
     <>
+   
       <AlurakutMenu githubUser={usuarioAleatorio} />
       <MainGrid>
         {/* <Box style="grid-area: profileArea;"> */}
@@ -269,32 +273,32 @@ export default function Home(props) {
   );
 }
 
-export async function getServerSideProps(context) {
-  const cookies = nookies.get(context)
-  const token = cookies.USER_TOKEN;
-  const { isAuthenticated } =  await fetch('https://alurakut.vercel.app/api/auth', {
-    headers: {
-        Authorization: token
-      }
-  })
-  .then(async (resposta) => await resposta.json())
+// export async function getServerSideProps(context) {
+//   const cookies = nookies.get(context)
+//   const token = cookies.USER_TOKEN;
+//   const { isAuthenticated } =  await fetch('https://alurakut.vercel.app/api/auth', {
+//     headers: {
+//         Authorization: token
+//       }
+//   })
+//   .then(async (resposta) => await resposta.json())
 
-  // if(!isAuthenticated) {
-  //   return {
-  //     redirect: {
-  //       destination: '/login',
-  //       permanent: false,
-  //     }
-  //   }
-  // }
-  const token_wait = jwt.decode(token);
-  const githubUser = token_wait.githubUser;
+//   // if(!isAuthenticated) {
+//   //   return {
+//   //     redirect: {
+//   //       destination: '/login',
+//   //       permanent: false,
+//   //     }
+//   //   }
+//   // }
+//   const token_wait = jwt.decode(token);
+//   const githubUser = token_wait.githubUser;
  
-  return {
-    props: {
-      githubUser: githubUser
-    }, // will be passed to the page component as props
-  }
-} 
+//   return {
+//     props: {
+//       githubUser: githubUser
+//     }, // will be passed to the page component as props
+//   }
+// } 
 
 
