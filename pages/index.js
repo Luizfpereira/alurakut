@@ -111,7 +111,7 @@ export default function Home(props) {
         }
       }` })
     })
-    .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
+    .then(async(response) => await response.json()) // Pega o retorno do response.json() e já retorna
     .then((respostaCompleta) => {
       const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
       console.log(comunidadesVindasDoDato)
